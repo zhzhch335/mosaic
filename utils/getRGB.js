@@ -2,8 +2,7 @@ const getPixels = require("get-pixels")
 const _ = require("lodash")
 
 function getRGB(buffer, type, callback) {
-    getPixels(buffer, `image/png`, function(err,pixels) {
-       const t = `image/${type || 'png'}`
+    getPixels(buffer, `image/${type || 'png'}`, function(err,pixels) {
         if (err) {
             console.log("Error",err)
         }

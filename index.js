@@ -31,7 +31,6 @@ const interval = setInterval(() => {
             return
         }
     }
-    debugger
     let txt = ""
     for (let item in result) {
         txt += `${item} ${result[item].diff}\n`
