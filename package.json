@@ -1,0 +1,23 @@
+{
+  "name": "mosaic",
+  "version": "1.0.0",
+  "description": "一个制作千图成像、马赛克拼图的工具",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "马赛克",
+    "图像处理",
+    "千图成像",
+    "mosaic"
+  ],
+  "author": "林语琛",
+  "license": "ISC",
+  "dependencies": {
+    "color-rna": "^1.0.1",
+    "get-pixels": "^3.3.2",
+    "lodash": "^4.17.21",
+    "sharp": "^0.28.3"
+  }
+}
