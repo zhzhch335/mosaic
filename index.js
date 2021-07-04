@@ -10,7 +10,7 @@ const subImg = require("./getsubImg")
 
 // 工具和类
 const ImageDiffPx = require("./imageDiffPx")
-const getPixels = require('./utils/getRGB')
+const getRGB = require('./utils/getRGB')
 const sortByRGB = require("./utils/sortByRGB")
 const fs = require("fs")
 
@@ -19,55 +19,56 @@ const fs = require("fs")
 const max_time = Math.ceil(Math.pow(MAIN_WIDTH,2) / subImg.length)
 let mainPixelsInfo = []
 
-let result = {}
-subImg.forEach(item=>{
-    result[item] = new ImageDiffPx(`./images/${item}`,new ColorRNA().rgb(220,107,113))
-})
 
-// const diff = new ImageDiffPx("./images/eebf4f69579e7fc8733d8ca24114e2712950e25e.jpg",new ColorRNA().rgb(220,107,113))
-const interval = setInterval(() => {
-    for (let item in result) {
-        if(result[item].diff == undefined) {
-            return
-        }
-    }
-    let txt = ""
-    for (let item in result) {
-        txt += `${item} ${result[item].diff}\n`
-    }
-
-    fs.writeFile('result.txt', txt, function(err) {
-        if (err) {
-            return console.error(err);
-        }
-    })
-
-    clearInterval(interval)
-})
-// while(true) {
-//     if (diff.diff) {
-//         console.log(diff.diff)
-//         break
+// const interval = setInterval(() => {
+//     for (let item in result) {
+//         if(result[item].diff == undefined) {
+//             return
+//         }
 //     }
-// }
+//     let txt = ""
+//     for (let item in result) {
+//         txt += `${item} ${result[item].diff}\n`
+//     }
 
-
-// main.resize(MAIN_WIDTH).toBuffer().then(buffer => {
-//     // 将主图片转化为25*25的像素图
-//     getPixels(buffer, 'png', function(pixelsArray) {
-//         // 设定像素位置
-//         mainPixelsInfo = pixelsArray.map((item,index)=>new MainPixel(item[0],item[1],item[2],Math.floor(index/MAIN_WIDTH),index%MAIN_WIDTH))
-//         // 根据RGB数量升序排列像素点
-//         mainPixelsInfo = sortByRGB(mainPixelsInfo)
-//         debugger
+//     fs.writeFile('result.txt', txt, function(err) {
+//         if (err) {
+//             return console.error(err);
+//         }
 //     })
+
+//     clearInterval(interval)
 // })
+
+
+// 将主图片转化为25*25的像素图
+main.resize(MAIN_WIDTH).toBuffer().then(async buffer => {
+    const pixelsArray = await getRGB(buffer, 'png')
+    // 设定像素位置
+    mainPixelsInfo = pixelsArray.map((item,index)=>new MainPixel(item[0],item[1],item[2],Math.floor(index/MAIN_WIDTH),index%MAIN_WIDTH))
+    // 根据RGB数量升序排列像素点
+    mainPixelsInfo = sortByRGB(mainPixelsInfo)
+    // 使用二维数组存储 第一维度 行x，列y 第二维度 像素点对应图片的颜色平均差值
+    let result = []
+    // 这里不能使用foreach 否则会改变async的作用域
+    console.time("计算时间")
+    for(let j=0;j<mainPixelsInfo.length;j++) {
+        console.log(`计算第${j}个像素点`)
+        result[mainPixelsInfo[j].getPos()] = []
+        for(let i=0;i<subImg.length;i++) {
+            result[mainPixelsInfo[j].getPos()].push(await new ImageDiffPx(`./images/${subImg[i]}`,mainPixelsInfo[j].getRNA()).getDiff())
+            console.log(`计算完成${j}个像素点与第${i}个图的差值`)
+        }
+    }
+    console.log(result)
+    console.timeEnd("计算时间")
+})
 
 
 
 
 // main.resize(25).toFile('one.png',()=>{
-    // getPixels("one.png", function(err, pixels) {
+    // getRGB("one.png", function(err, pixels) {
     //     if(err) {
     //         console.log("Bad image path")
     //         return
@@ -96,10 +97,10 @@ class MainPixel {
 
     getRNA() {
         var color = new ColorRNA()
-        return color.rgb(r,g,b)
+        return color.rgb(this.r,this.g,this.b)
     }
 
     getPos() {
-        return [x,y]
+        return [this.x,this.y]
     }
 }
