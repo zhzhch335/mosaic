@@ -7,7 +7,16 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "启动程序",
+            "name": "计算差值并写入文件",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\index_getDiff.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "拼图",
             "skipFiles": [
                 "<node_internals>/**"
             ],
