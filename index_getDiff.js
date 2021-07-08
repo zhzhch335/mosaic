@@ -49,7 +49,13 @@ main.resize(MAIN_WIDTH).toBuffer().then(async buffer => {
     // 根据RGB数量升序排列像素点
     mainPixelsInfo = sortByRGB(mainPixelsInfo)
     // 使用二维数组存储 第一维度 图片名称 第二维度 图片对应各个像素点的偏差值
-    let result = JSON.parse(fs.readFileSync("./result.json").toString())
+    let result = {}
+    try {
+        result = JSON.parse(fs.readFileSync("./result.json").toString())
+    }
+    catch {
+        console.log("result.json 文件不存在，从头开始计算")
+    }
     // 这里不能使用foreach 否则会改变async的作用域
     for(let i=0;i<subImg.length;i++) {
         console.log(`计算第${i}个图`)

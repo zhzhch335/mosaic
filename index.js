@@ -50,16 +50,30 @@ main.resize(MAIN_WIDTH).toBuffer().then(async buffer => {
         imageDict[files[findIndex]] += 1 //使用次数+1
         item.setUrl(`./images/${files[findIndex]}`)
     })
-    let gmInstance = gm(mainPixelsInfo[0].url) // 实例化第一张图片开始拼接
-    let currentY = 0 // 存储当前行号
-    let bufferList = [] // 每行输出一个buffer用于最后拼接
     let completeFile = 0 //记录完成的图片数量
+    let imageJSON = [] //输出JSON文件
     mainPixelsInfo.forEach(item=>{
+        let info = item.url.replace("./images/","").split("/")[0]
+        let author = info.split("_")[0]
+        let uid = info.split("_")[1]
+        imageJSON.push({
+            index: item.x + item.y * 25, //从左到右从上到下按顺序排的话，就是25进制啦
+            author: author,
+            uid: uid,
+            url: item.url
+        })
         sharp(item.url).resize(40,40,{
             fit: "fill"
         }).toFile(`./result/${item.x}-${item.y}.png`).then(err=>{
             completeFile++
         })
+    })
+    // 将图片信息写入文件
+    fs.writeFile('./imgData.json', JSON.stringify(imageJSON), function(err) {
+        console.log("图片排列信息已写入文件")
+        if (err) {
+            return console.error(err);
+        }
     })
     let interval = setInterval(()=>{
         if (completeFile === 625) {
@@ -84,33 +98,4 @@ main.resize(MAIN_WIDTH).toBuffer().then(async buffer => {
             })
         }
     })
-    // mainPixelsInfo.sort((a,b)=> {
-    //     if (a.y < b.y) {
-    //         return -1
-    //     } else if (a.y === b.y) {
-    //         if (a.x < b.x) {
-    //             return -1
-    //         } else {
-    //             return 1
-    //         }
-    //     } else {
-    //         return 1
-    //     }
-    // })
-    // for(let i = 0;i < mainPixelsInfo.length; i++) {
-    //     if (currentY != mainPixelsInfo[i].y) {
-    //         currentY = mainPixelsInfo[i].y
-    //         let imgBuffer = await new Promise(resolve => {
-    //             gmInstance.toBuffer((err,buffer) => {
-    //                 resolve(buffer)
-    //             })
-    //         })
-    //         bufferList.push(imgBuffer)
-    //         gmInstance = null
-    //         gmInstance = gm(mainPixelsInfo[i].url).resize(10,10) // 实例化下一行第一张图片开始拼接
-    //     } else {
-    //         gmInstance = gmInstance.append(gm(mainPixelsInfo[i].url).resize(10,10),true) // 向右拼接图片
-    //     }
-    // }
-    // resultInstance.write("result.png",err=>console.log(err))
 })
