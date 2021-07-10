@@ -69,7 +69,7 @@ main.resize(MAIN_WIDTH).toBuffer().then(async buffer => {
         })
     })
     // 将图片信息写入文件
-    fs.writeFile('./imgData.json', JSON.stringify(imageJSON), function(err) {
+    fs.writeFile('./dataResult/imgData.json', JSON.stringify(imageJSON), function(err) {
         console.log("图片排列信息已写入文件")
         if (err) {
             return console.error(err);
