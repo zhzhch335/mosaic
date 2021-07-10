@@ -39,7 +39,6 @@ main.resize(MAIN_WIDTH).toBuffer().then(async buffer => {
     mainPixelsInfo.forEach((item,index) => {
         let findIndex = _.indexOf(newDiff[index],_.min(newDiff[index])) // 找到最大值的索引
         if (imageDict[files[findIndex]] >= MAX_TIME) {
-            console.log("多的是",findIndex)
             // 如果当前这幅图已经超过使用次数,则将其所有的偏差值设为最大
             newDiff = newDiff.map((item)=> {
                 item[findIndex] = Infinity
@@ -57,7 +56,7 @@ main.resize(MAIN_WIDTH).toBuffer().then(async buffer => {
         let author = info.split("_")[0]
         let uid = info.split("_")[1]
         imageJSON.push({
-            index: item.x + item.y * 25, //从左到右从上到下按顺序排的话，就是25进制啦
+            index: item.x * 25 + item.y, //从左到右从上到下按顺序排的话，就是25进制啦
             author: author,
             uid: uid,
             url: item.url

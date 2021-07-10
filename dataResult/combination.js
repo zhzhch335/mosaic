@@ -44,5 +44,5 @@ if (blessData.filter(item=>!item.used).length) {
 }
 
 fs.writeFile(path.join(__dirname, '/result.json'), JSON.stringify(result), err => {
-    console.log(err)
+    if(err) console.log(err)
 })
