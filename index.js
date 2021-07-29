@@ -19,7 +19,7 @@ const MainPixel = require('./MainPixel')
 
 
 // 获取小图数量，计算每个图出现的最大次数
-const MAX_TIME = Math.ceil(Math.pow(MAIN_WIDTH,2) / subImg.length)
+var MAX_TIME = Math.ceil(Math.pow(MAIN_WIDTH,2) / subImg.length) - 1
 let mainPixelsInfo = []
 
 main.resize(MAIN_WIDTH).toBuffer().then(async buffer => {
@@ -37,6 +37,14 @@ main.resize(MAIN_WIDTH).toBuffer().then(async buffer => {
     let diff = JSON.parse(fs.readFileSync("./result.json").toString())
     let {newDiff, files} = tranposDiff(diff)
     mainPixelsInfo.forEach((item,index) => {
+        if (newDiff[index].every(item=>item == Infinity)) {
+            newDiff = tranposDiff(diff).newDiff
+            imageDict = {}
+            subImg.forEach(item => {
+                imageDict[item] = 0
+            })
+            MAX_TIME = Math.ceil((Math.pow(MAIN_WIDTH,2) - index) / subImg.length) - 1
+        }
         let findIndex = _.indexOf(newDiff[index],_.min(newDiff[index])) // 找到最大值的索引
         if (imageDict[files[findIndex]] >= MAX_TIME) {
             // 如果当前这幅图已经超过使用次数,则将其所有的偏差值设为最大

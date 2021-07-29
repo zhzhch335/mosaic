@@ -35,9 +35,15 @@ blessData.forEach((item, index) => {
 
 // 继续处理剩余的祝福
 blessData.filter(item=>!item.used).forEach(item => {
-    result.push(Object.assign(item,imgData.splice(0,1)[0]))
-    // 设定标记以便统计
-    item.used = true
+    if(!imgData.length) return
+    let url = imgData[0].url
+    let index = 0
+    while (index !== -1) {
+        result.push(Object.assign(JSON.parse(JSON.stringify(item)),JSON.parse(JSON.stringify(imgData[index]))))
+        imgData.splice(index,1)
+        item.used = true
+        index = imgData.findIndex(img => img.url === url)
+    }
 })
 
 if (imgData.length) {
@@ -48,6 +54,7 @@ if (imgData.length) {
 }
 
 if (blessData.filter(item=>!item.used).length) {
+    debugger
     console.log(`剩余祝福${blessData.filter(item=>!item.used).length}个`)
 }
 
